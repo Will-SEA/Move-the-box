@@ -18,6 +18,7 @@ Board::Board() {
     cout << "A logic puzzle about moving boxes around. Clean the dock, do it fast!" << endl;
     cout << "You can move, drop and swap the boxes." << endl;
     cout << "Three or more boxes of the same kind in a line disappear!" << endl << endl;
+
     cout << "Please input the level that you want to play. " << "We have 10 levels" <<endl;
 
     string level;
@@ -98,14 +99,8 @@ void Board::print() const{
         cout << setw(3) << i  << " ";
         for (int j = 0; j < width_; j++) {
 
-            if (j == 0) { //first column
-                cout.flags(ios::right); //rigth alignment
-                cout << setw(3) << board_[i][j].getType() << ' ';
-            }
-            else { //other column
-                cout.flags(ios::right); //rigth alignment
-                cout << setw(3) << board_[i][j].getType() << ' ';
-            }
+            cout.flags(ios::right);
+            cout << setw(3) << board_[i][j].getType() << ' ';
         }
         cout << endl;
     }
