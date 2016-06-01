@@ -9,15 +9,6 @@
 using namespace std;
 
 class Box {
-private:
-    // box type, default value is -1, which means empty box
-    int type;
-
-    // the row number of this box in the game board
-    int row;
-
-    // the column number of this box in the game board
-    int col;
 
 public:
     /*
@@ -41,7 +32,7 @@ public:
      * Parameters:      all the three parameters are integer, the first parameter is the type of the box,
      *                  and the rest two parameters define the position of this box in the game board
      */
-    Box(int type, int row, int col);
+    Box(int type, int row, int col, bool mask);
 
     /*
      * Method:          getType()
@@ -80,6 +71,30 @@ public:
      * Description:     default deconstructor, since I didn't use any dynamic memory, it's empty now
      */
     ~Box();
+
+    /*
+     * Method:          getMask()
+     * Description:     this method will return the current mask of the box to decide whether this box should be cleared.
+     */
+    bool getMask() const;
+
+    /*
+     * Method:          setMask()
+     * Description:     this method will set the mask
+     */
+    void setMask(bool mask);
+private:
+    // box type, default value is -1, which means empty box
+    int type_;
+
+    // the row number of this box in the game board
+    int row_;
+
+    // the column number of this box in the game board
+    int col_;
+
+    // the mask of box can decide whether this box needs to be cleared.
+    bool mask_;
 };
 
 

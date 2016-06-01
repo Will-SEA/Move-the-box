@@ -8,35 +8,45 @@
 Box::Box() {
     setType(-1);
     setPosition(-1, -1);
+    setMask(false);
 };
 
 Box::Box(int type){
     setType(type);
     setPosition(-1, -1);
+    setMask(false);
 }
 
-Box::Box(int type, int row, int col):type(type), row(row), col(col) {}
+Box::Box(int type, int row, int col, bool mask):type_(type), row_(row), col_(col), mask_(mask) {}
 
 int Box::getType() const{
-    return type;
+    return type_;
 }
 
 void Box::setType(int type) {
-    this->type = type;
+    type_ = type;
 }
 
 
 void Box::setPosition(int row, int col) {
-    this->row = row;
-    this->col = col;
+    row_ = row;
+    col_ = col;
 }
 
 int Box::getCol() const{
-    return col;
+    return col_;
 }
 
 int Box::getRow() const{
-    return row;
+    return row_;
+}
+
+bool Box::getMask() const {
+    return mask_;
+}
+
+void Box::setMask(bool mask) {
+    mask_ = mask;
 }
 
 Box::~Box() {

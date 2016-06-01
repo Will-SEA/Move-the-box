@@ -9,6 +9,6 @@ using namespace std;
 int main() {
     Board board;
     board.play();
-
+    // user input choose board
     return 0;
 }

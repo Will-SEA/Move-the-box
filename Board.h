@@ -13,21 +13,7 @@
 
 
 class Board {
-    // width of the game board
-    int width;
 
-    // height of the game board
-    int height;
-
-    // game board
-    vector<vector<Box> > board;
-
-    // game board mask: when we traverse the game board, if this box needs to be clear, it will set the mask to true,
-    // default value is false.
-    vector<vector<bool> > board_mask;
-
-    // this map is used to count the number of each type of non-empty box
-    map <int, int> boxCount;
 public:
     /*
      * Method:          Board()
@@ -50,6 +36,20 @@ public:
     ~Board();
 
 private:
+
+    // width of the game board
+    int width_;
+
+    // height of the game board
+    int height_;
+
+    // game board
+    vector<vector<Box> > board_;
+
+    // this map is used to count the number of each type of non-empty box
+    map <int, int> boxCount_;
+
+
     /*
      * Method:          void print() const;
      * Description:     this method will print the game board
@@ -62,7 +62,7 @@ private:
      * Parameters:      all the 4 parameters are integer, the first 2 are the position of first box, and the other 2
      *                  are the position of second box.
      * */
-    void swap(int row1, int col1, int row2, int col2);
+    bool swap(int row1, int col1, int row2, int col2);
 
     /*
      * Method:          move(int row, int col, int dir);
@@ -106,7 +106,7 @@ private:
      *                  map, if this map is empty, it means the game board is empty, so user wins, and then return true,
      *                  otherwise, return false.
      * */
-    bool win();
+    bool win() const;
 
     /*
      * Method:          canWin()
