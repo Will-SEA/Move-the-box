@@ -10,6 +10,14 @@
 #include <string>
 #include <map>
 #include "Box.h"
+#include <set>
+
+enum Direction
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT};
 
 
 class Board {
@@ -35,6 +43,20 @@ public:
      * */
     ~Board();
 
+    /*
+     * Method:          getPos(int row, int col)
+     * Description:     this method will return the position of certain box with row and col in the 1D vector
+     * Parameters:      row is the row number of the box in the game board and the col is the column number.
+     */
+    int getPos(int row, int col) const;
+
+/*    *//*
+     * Method:          getRowCol(int pos)
+     * Description:     this method will return a pair which represents the row number and column number of the box
+     *                  in the board
+     * Parameters:      the parameter represents the position of the box in the iD vector.
+     *//*
+    int getRowCol(int pos) const;*/
 private:
 
     // width of the game board
@@ -44,7 +66,7 @@ private:
     int height_;
 
     // game board
-    vector<vector<Box> > board_;
+    vector<Box> board_;
 
     // this map is used to count the number of each type of non-empty box
     map <int, int> boxCount_;
@@ -70,13 +92,7 @@ private:
      * Parameters:      all the three parameters are integer, the first 2 are position of box that user wants to move,
      *                  the third one is the direction that user want to move. note: 0-up, 1-down, 2-left, 3-right.
      * */
-    void move(int row, int col, int dir);
-
-    /*
-     * Method:          clearMask()
-     * Description:     this function is used to set the mask of each box to default value, which is false
-     * */
-    void clearMask();
+    bool move(int row, int col, int dir);
 
     /*
      * Method:          findClear()
@@ -84,14 +100,14 @@ private:
      *                  the number is over 3. This traverse method will traverse 2 twice, the one is vertical direction,
      *                  the other one is horizontal direction. the main idea is like 2 pointers.
      * */
-    bool findClear();
+    bool findClear(set<int> &list);
 
     /*
      * Method:          doClear()
      * Description:     this method is used to executive the clear action, it will set all the boxes, that need to be
      *                  clear, to empty, which is -1
      * */
-    void doClear();
+    void doClear(const set<int> &list);
 
     /*
      * Method:          gravity()

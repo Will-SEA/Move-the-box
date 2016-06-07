@@ -6,11 +6,6 @@
 #include <fstream>
 #include <sstream>
 
-#define UP     0
-#define DOWN   1
-#define LEFT   2
-#define RIGHT  3
-
 
 Board::Board() {
 
@@ -31,29 +26,40 @@ Board::Board() {
     }
     string str;
     int rowNum = 0;
+    int widthCheck = 0;
     while (getline(infile, str)) {
         int colNum = 0;
         istringstream list(str);
         string type;
-        vector<Box> row;
+
         while (list >> type) {
-            if (stoi(type) != -1) {
-                if (boxCount_.count(stoi(type)) == 0) {
-                    boxCount_[stoi(type)] = 1;
+            int _type;
+            istringstream(type) >> _type;
+            if (_type != -1) {
+                if (boxCount_.count(_type) == 0) {
+                    boxCount_[_type] = 1;
                 } else {
-                    boxCount_[stoi(type)] += 1;
+                    boxCount_[_type] += 1;
                 }
             }
-            Box b(stoi(type), rowNum, colNum, false);
-            row.push_back(b);
+            Box b(_type, rowNum, colNum);
+            board_.push_back(b);
             colNum++;
         }
-        board_.push_back(row);
+        if (widthCheck == 0) {
+            widthCheck = colNum;
+        }
+        if (colNum != widthCheck) {
+            cerr << "the " << rowNum << "th "
+            << "row has the different length compared with other row! Please check again!" << endl;
+            exit(0);
+        }
+        widthCheck = colNum;
         rowNum++;
     }
 
-    height_ = (int) board_.size();
-    width_ = (int) board_[0].size();
+    height_ = rowNum;
+    width_ = widthCheck;
     cout << "height_: " << height_ << endl;
     cout << "width_: " << width_ << endl;
 
@@ -67,9 +73,24 @@ void Board::play() {
         cout << "NOTE: UP:0, DOWN:1, LEFT:2, RIGHT:3" << endl;
         print();
         int row, col, dir;
+
         cin >> row >> col >> dir;
 
-        move (row, col, dir);
+        if (move (row, col, dir)) {
+            gravity();
+            while(1) {
+                set<int> clearList;
+                if (findClear(clearList)) {
+                    doClear(clearList);
+                    //print();
+                    gravity();
+                } else {
+                    break;
+                }
+            }
+        } else {
+            cout << "move action is invalid!" << endl;
+        }
 
         if(win()) {
             cout << "You Win!" << endl;
@@ -86,6 +107,8 @@ void Board::play() {
 
 void Board::print() const{
 
+
+
     cout << "   ";
     for (int i = 0; i < height_; i++) {
         if (i == 0) {//"   1   2   3..."
@@ -100,7 +123,8 @@ void Board::print() const{
         for (int j = 0; j < width_; j++) {
 
             cout.flags(ios::right);
-            cout << setw(3) << board_[i][j].getType() << ' ';
+            int pos = getPos(i, j);
+            cout << setw(3) << board_[pos].type_ << ' ';
         }
         cout << endl;
     }
@@ -110,35 +134,37 @@ void Board::gravity() {
 // i/j two pointer
 
     for (int col = 0; col < width_; col++) {
-        Box index = board_[height_ - 1][col];
+        Box index = board_[getPos(height_ - 1, col)];
         for (int row = height_ - 1; row >= 0; row--) {
-            int cur_type = board_[row][col].getType();
+            int cur_type = board_[getPos(row, col)].type_;
             if (cur_type != -1) {
-                swap(row, col, index.getRow(), index.getCol());
-                index = board_[index.getRow() - 1][col];
+                swap(row, col, index.row_, index.col_);
+                index = board_[getPos(index.row_ - 1, col)];
             }
         }
     }
 }
 
 
-bool Board::findClear() {
+bool Board::findClear(set<int> &list) {
     int consec_count = 0;
     bool found_match = false;
 
-    clearMask();
+
+    //clearMask();
 
     //find consecutive horizontal matches
     for(int i = 0 ; i < height_ ; i++){
-        Box last_box = board_[i][0];
+
+        Box last_box = board_[getPos(i, 0)];
         for(int j  = 1 ; j < width_ ; j++){
-            Box cur_box = board_[i][j];
-            if(cur_box.getType() == last_box.getType() && cur_box.getType() > -1 ){
+            Box cur_box = board_[getPos(i, j)];
+            if(cur_box.type_ == last_box.type_ && cur_box.type_ > -1 ){
                 consec_count++;
             }else{
                 if(consec_count >= 2){
-                    for (int col = last_box.getCol(); col < cur_box.getCol(); col++) {
-                        board_[i][col].setMask(true);
+                    for (int col = last_box.col_; col < cur_box.col_; col++) {
+                        list.insert(getPos(i, col));
                         found_match = true;
                     }
                 }
@@ -147,24 +173,27 @@ bool Board::findClear() {
             }
         }
         if(consec_count >= 2){
-            for (int col = last_box.getCol(); col < width_; col++) {
-                board_[i][col].setMask(true);
+
+            for (int col = last_box.col_; col < width_; col++) {
+
+                list.insert(getPos(i, col));
                 found_match = true;
             }
+            consec_count = 0;
         }
     }
 
     //find consecutive vertical matches
     for(int j = 0; j < width_; j++){
-        Box last_box = board_[0][j];
+        Box last_box = board_[getPos(0, j)];
         for(int i  = 1 ; i < height_ ; i++){
-            Box cur_box = board_[i][j];
-            if(cur_box.getType() == last_box.getType() && cur_box.getType() > -1 ){
+            Box cur_box = board_[getPos(i, j)];
+            if(cur_box.type_ == last_box.type_ && cur_box.type_ > -1 ){
                 consec_count++;
             }else{
                 if(consec_count >= 2){
-                    for (int row = last_box.getRow(); row < cur_box.getRow(); row++) {
-                        board_[row][j].setMask(true);
+                    for (int row = last_box.row_; row < cur_box.row_; row++) {
+                        list.insert(getPos(row, j));
                         found_match = true;
                     }
                 }
@@ -173,92 +202,88 @@ bool Board::findClear() {
             }
         }
         if(consec_count >= 2){
-            for (int row = last_box.getRow(); row < height_; row++) {
-                board_[row][j].setMask(true);
+            for (int row = last_box.row_; row < height_; row++) {
+                list.insert(getPos(row, j));
                 found_match = true;
+                consec_count = 0;
             }
         }
     }
-
     return found_match;
 
 }
 
-void Board::doClear() {
+void Board::doClear(const set<int> &list) {
     //clear the board wherever there matching boxes 3 in a row
-    for (int i = 0; i < height_; i++) {
-        for (int j = 0; j < width_; j++) {
-            if (board_[i][j].getMask()) {
-                int currType = board_[i][j].getType();
-                // if boxCount_[currType] equals 1, it means, it's the last one of this type of box
-                if (currType != -1) {
-                    if (boxCount_[currType] == 1) {
-                        boxCount_.erase(currType);
-                    } else {
-                        boxCount_[currType] -= 1;
-                    }
-                }
-                board_[i][j].setType(-1);
+
+    for (set<int>::iterator it = list.begin(); it != list.end(); ++it) {
+        int curType = board_[*it].type_;
+        if (curType != -1) {
+            if (boxCount_[curType] == 1) {
+                boxCount_.erase(curType);
+            } else {
+                boxCount_[curType] -= 1;
             }
         }
-    }
-}
-
-void Board::clearMask() {
-    for(int i = 0; i < height_; i++) {
-        for(int j = 0; j < width_; j++) {
-            board_[i][j].setMask(false);
-        }
+        board_[*it].type_ = -1;
     }
 
+
 }
+
 
 bool Board::swap(int row1, int col1, int row2, int col2) {
 
-    if (board_[row1][col1].getType() == -1) {
+    if (board_[getPos(row1, col1)].type_ == -1) {
         return false;
     }
     if (row1 < 0 || col1 < 0 || row2 < 0 || col2 < 0
         || row1 >= height_ || col1 >= width_ || row2 >= height_ || col2 >= width_) {
         return false;
     }
-    int type = board_[row2][col2].getType();
-    board_[row2][col2].setType(board_[row1][col1].getType());
-    board_[row1][col1].setType(type);
+    int type = board_[getPos(row2, col2)].type_;
+    board_[getPos(row2, col2)].type_ = board_[getPos(row1, col1)].type_;
+    board_[getPos(row1, col1)].type_ = type;
 
     return true;
 
 }
 
-void Board::move(int row, int col, int dir) {
-
+bool Board::move(int row, int col, int dir) {
+    bool move = false;
+    int deltaX = 0;
+    int deltaY = 0;
     switch(dir) {
         case UP:
-            if (swap(row, col, row - 1, col)) {
+            deltaY = -1;
+            if (swap(row, col, row + deltaY, col + deltaX)) {
+                move = true;
                 break;
             } else {
-                cout << "Your move is invalid " << endl;
                 break;
             }
         case DOWN:
-            if (swap(row, col, row + 1, col)) {
+            deltaY = 1;
+            if (swap(row, col, row + deltaY, col + deltaX)) {
+                move = true;
                 break;
             } else {
-                cout << "Your move is invalid " << endl;
                 break;
             }
         case LEFT:
-            if (swap(row, col, row, col -1)) {
+            deltaX = -1;
+            if (swap(row, col, row + deltaY, col + deltaX)) {
+                move = true;
                 break;
             } else {
-                cout << "Your move is invalid " << endl;
                 break;
             }
         case RIGHT:
-            if (swap(row, col, row, col + 1)) {
+            deltaX = 1;
+            if (swap(row, col, row + deltaY, col + deltaX)) {
+                move = true;
                 break;
             } else {
-                cout << "Your move is invalid " << endl;
                 break;
             }
 
@@ -266,19 +291,7 @@ void Board::move(int row, int col, int dir) {
             break;
     }
 
-
-    gravity();
-
-
-    while(1) {
-        if (findClear()) {
-            doClear();
-            //print();
-            gravity();
-        } else {
-            break;
-        }
-    }
+    return move;
 }
 
 bool Board::canWin() {
@@ -294,6 +307,15 @@ bool Board::canWin() {
 bool Board::win() const{
     return boxCount_.empty();
 }
+
+int Board::getPos(int row, int col) const {
+    return row * width_ + col;
+}
+
+/*int Board::getRowCol(int pos) const {
+    int row, col;
+
+}*/
 
 Board::~Board() { }
 
