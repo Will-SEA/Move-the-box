@@ -1,5 +1,5 @@
 //
-// Created by yuanhao on 5/22/16.
+// Created by yuanhao on 6/17/16.
 //
 
 #include "Box.h"
@@ -12,4 +12,3 @@ Box::Box() {
 };
 
 Box::Box(int type, int row, int col):type_(type), row_(row), col_(col) { }
-

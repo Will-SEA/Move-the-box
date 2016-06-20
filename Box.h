@@ -1,9 +1,11 @@
 //
-// Created by yuanhao on 5/22/16.
+// Created by yuanhao on 6/17/16.
 //
 
 #ifndef MOVE_THE_BOX_BOX_H
 #define MOVE_THE_BOX_BOX_H
+
+
 #include <iostream>
 
 using namespace std;
@@ -34,8 +36,6 @@ struct Box {
     */
     Box(int type, int row, int col);
 };
-
-
 
 
 #endif //MOVE_THE_BOX_BOX_H

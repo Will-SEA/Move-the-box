@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(Move_The_Box)
+project(Move_the_box)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp Board.cpp Board.h Box.cpp Box.h board.txt)
-add_executable(Move_The_Box ${SOURCE_FILES})
+set(SOURCE_FILES main.cpp Box.cpp Box.h Board.cpp Board.h Game.cpp Game.h)
+add_executable(Move_the_box ${SOURCE_FILES})
