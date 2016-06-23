@@ -11,22 +11,7 @@ This project is the implementation of a mobile game application named Move the b
 
 IDE: CLion
 
-compiler: gcc 
+compiler: g++
 
 -std = c++11
 
-#### Installation
-
----
-
-compile 'main.cpp'
-
-
-
-##### Contact
-
-Name: Hao Yuan
-
-Email: yuanhao.will@gmail.com
-
-Mobile: 5516893368
