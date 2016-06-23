@@ -6,8 +6,7 @@
 #define MOVETHEBOX_GAME_H
 
 #include "Board.h"
-#include <fstream>
-#include <sstream>
+
 
 class Game {
 public:
@@ -41,7 +40,8 @@ public:
 
 private:
     // game board
-    Board gameBoard_;
+
+    Board gameBoard_ = Board(true);
 
 };
 

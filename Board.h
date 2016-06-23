@@ -10,25 +10,32 @@
 #include <vector>
 #include <set>
 #include <map>
-
-using namespace std;
-
-enum Direction
-{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT};
-
-struct Move {
-    int row_;
-    int col_;
-    Direction dir_;
-    Move(int row, int col, Direction dir);
-};
+#include <fstream>
+#include <sstream>
 
 class Board {
+    enum Direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT};
+
+    struct Move {
+        int row_;
+        int col_;
+        Direction dir_;
+        Move(int row, int col, Direction dir);
+    };
 public:
+
+    Board();
+
+    Board(bool loadFlag);
+
+    bool operator==(Board& rhs) const;
+
+    ~Board();
 
     /*
      * Method:          void print() const;
@@ -44,39 +51,7 @@ public:
      *                  the third one is the direction that user want to move.
      *                  note: 0-up, 1-down, 2-left, 3-right.
      * */
-    bool move( int row, int col, int dir);
-
-    /*
-     * Method:          bool swap(int row1, int col1, int row2, int col2)
-     * Description:     this method will swap the type of 2 boxes
-     * Parameters:      all the 4 parameters are integer, the first 2 are the position of first box, and the
-     *                  other 2 are the position of second box.
-     * */
-    bool swap( int row1, int col1, int row2, int col2);
-
-    /*
-     * Method:          bool findClear(set<int> &list);
-     * Description:     this method is used to traverse the game board, and find is there any consecutive boxes, and
-     *                  the number is over 3. This traverse method will traverse 2 twice, the one is vertical direction,
-     *                  the other one is horizontal direction. the main idea is like 2 pointers.
-     * Parameters:      the element will store the position that needs to be cleared
-     * */
-    bool findClear( set<int> &list);
-
-    /*
-     * Method:          void doClear(const set<int> &list)
-     * Description:     this method is used to executive the clear action, it will set all the boxes, that need to be
-     *                  clear, to empty, which is -1
-     * Parameters:      the  element stores the position of the box that needs to be cleared
-     * */
-    void doClear( const set<int> &list);
-
-    /*
-     * Method:          void gravity()
-     * Description:     this method is used to traverse the game board, and find is there any box that has no support.
-     *                  if this box cannot be hold up, it will falling down until it can be hold up.
-     * */
-    void gravity();
+    Board move( int row, int col, int dir, bool &isMoved) const;
 
     /*
      * Method:          bool win() const;
@@ -94,22 +69,10 @@ public:
      * */
     bool canWin() const;
 
-    /*
-     * Method:          getPos(int row, int col)
-     * Description:     this method will return the position of certain box with row and col in the 1D vector
-     * Parameters:      row is the row number of the box in the game board and the col is the column number.
-     */
-    int getPos(int row, int col) const;
-
-    /*
-     * Method:          bool isSameBoard(Board board1, Board board2) const
-     * Description:
-     * Parameters:
-     * */
-    bool isSameBoard(Board board) const;
+    void allPossibleMove(std::vector<Board> &allMoves, bool &findSolution) const;
 
 
-
+private:
     // width of the game board
     int width_;
 
@@ -117,10 +80,35 @@ public:
     int height_;
 
     // game board
-    vector<int> listOfBox_;
+    std::vector<int> listOfBox_;
 
     // path
-    vector<Move> path_;
+    std::vector<Move> path_;
+
+    /*
+     * Method:          bool swap(int row1, int col1, int row2, int col2)
+     * Description:     this method will swap the type of 2 boxes
+     * Parameters:      all the 4 parameters are integer, the first 2 are the position of first box, and the
+     *                  other 2 are the position of second box.
+     * */
+    Board swap( int row1, int col1, int row2, int col2, bool &isSwapped) const;
+
+    /*
+     * Method:          bool findClear(set<int> &list);
+     * Description:     this method is used to traverse the game board, and find is there any consecutive boxes, and
+     *                  the number is over 3. This traverse method will traverse 2 twice, the one is vertical direction,
+     *                  the other one is horizontal direction. the main idea is like 2 pointers.
+     * Parameters:      the element will store the position that needs to be cleared
+     * */
+    bool findClear( std::set<int> &clearList) const;
+
+    /*
+     * Method:          getPos(int row, int col)
+     * Description:     this method will return the position of certain box with row and col in the 1D vector
+     * Parameters:      row is the row number of the box in the game board and the col is the column number.
+     */
+    int getPos(int row, int col) const;
+
 };
 
 
