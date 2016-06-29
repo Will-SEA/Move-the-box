@@ -21,28 +21,24 @@ public:
      * Method:          play()
      * Description:     this is the main function of the class, it will assemble the other functions of the game
      * */
-    void play();
+    void play() const;
 
     /*
      * Method:          void findSolution()
      * Description:     this method is used to find the solution of the game.
      * */
-    void findSolution();
+    void findSolution() const;
 
 
     /*
      * Method:          ~Game()
-     * Description:     destrctor of the Game class.
+     * Description:     de-constrctor of the Game class.
      * */
     ~Game();
 
-
-
 private:
-    // game board
-
-    Board gameBoard_ = Board(true);
-
+    // file path
+    std::string filePath_;
 };
 
 
